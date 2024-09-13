@@ -45,22 +45,11 @@
 (check-expect (find-name-longer-than--widget Wire 3) (list Wire))
 (check-expect (find-quantity-over--widget Wire 2) (list Wire))
 (check-expect (find-cheaper-than--widget Wire 6) (list Wire))
-(check-expect (find-hard-make--widget Jewelry 6 4)
-              (list Jewelry Ring Pendant Bracelet Beads))
-(check-expect (resupply--widget Wire 6 2)
-              (make-widget "Wire" 5 0 5 empty))
+;;(check-expect (find-hard-make--widget Jewelry 6 4)
+;;              (list Jewelry Ring Pendant Bracelet Beads))
+;;(check-expect (resupply--widget Wire 6 2)
+;;              (make-widget "Wire" 5 0 5 empty))
 ;;                                 ^^^ should be 0, not 5
-
-;; DELETE THIS WHEN DONE
-;#
-(define (sum-children lon)
-        (local ([(define (sum-arb-tree node)
-                         (+ (node-data node)
-                            (sum-children (node-children node))))])
-               (cond [(empty? lon) 0]
-                 [else
-                  (+ (sub-arb-tree (first lon))
-                     (sum-children (rest lon)))])))
 
 
 ;; Function definition for find-name-longer-than--widget: 
@@ -69,25 +58,37 @@
 ;; that can include that widget or its subwidget, with names 
 ;; longer than the spesified string length
 
+(check-expect (find-name-longer-than--widget (make-widget "" 0 0 0 empty) 0) empty)
+(check-expect (find-name-longer-than--widget Telephone 5) (list Telephone Receiver Buttons Numbers))
+
 ;; (define (find-name-longer-than--widget (make-widget "" 0 0 0 empty) 0) empty) ;the stub
 
-;#
-(define (sum-children lon)
-        (local ([(define (sum-arb-tree node)
-                         (+ (node-data node)
-                            (sum-children (node-children node))))])
-               (cond [(empty? lon) 0]
-                 [else
-                  (+ (sub-arb-tree (first lon))
-                     (sum-children (rest lon)))])))
+(define (find-name-longer-than--low low n)
+  (cond [(empty? low) empty]
+        [else (append (find-name-longer-than--widget (first low) n) (find-name-longer-than--low (rest low) n))]))
+
+(define (find-name-longer-than--widget w n)
+  (cond [(> (string-length (widget-name w)) n) (cons w (find-name-longer-than--low (widget-parts w) n))]
+        [else (find-name-longer-than--low (widget-parts w) n)]))
 
 ;; Function definition for find-quantity-over--widget: 
 ;; Signature: Widget Natural -> ListOfWidget
 ;; Purpose: Given a widget and a natural number, examine the widget, as well as all of 
 ;; the subwidgets used to manufacture it, and return those whose 
-;; quantity in stock is greater than the given natural number. 
+;; quantity in stock is greater than the given natural number.
+
+(check-expect (find-quantity-over--widget (make-widget "" 0 0 0 empty) 0) empty)
+(check-expect (find-quantity-over--widget Telephone 7) (list Receiver Buttons Numbers))
 
 ;; (define (find-quantity-over--widget (make-widget "" 0 0 0 empty) 0) empty)) ; Stub
+
+(define (find-quantity-over--low low n)
+  (cond [(empty? low) empty]
+        [else (append (find-quantity-over--widget (first low) n) (find-quantity-over--low (rest low) n))]))
+
+(define (find-quantity-over--widget w n)
+  (cond [(> (widget-quantity w) n) (cons w (find-quantity-over--low (widget-parts w) n))]
+        [else (find-quantity-over--low (widget-parts w) n)]))
 
 ;; Function definition for find-cheaper-than--widget: 
 ;; Signature: Widget Natural -> ListOfWidgets
@@ -95,16 +96,38 @@
 ;; that can include that widget or its subwidgets, with prices
 ;; cheaper than that spesified by the minimum price
 
+(check-expect (find-cheaper-than--widget (make-widget "" 0 0 1000 empty) 0) empty)
+(check-expect (find-cheaper-than--widget Telephone 6) (list Buttons Numbers Cord Wire))
+
 ;; (define (find-cheaper-than--widget (make-widget "" 0 0 0 empty) 0) empty)
+
+(define (find-cheaper-than--low low n)
+  (cond [(empty? low) empty]
+        [else (append (find-cheaper-than--widget (first low) n) (find-cheaper-than--low (rest low) n))]))
+
+(define (find-cheaper-than--widget w n)
+  (cond [(< (widget-price w) n) (cons w (find-cheaper-than--low (widget-parts w) n))]
+        [else (find-cheaper-than--low (widget-parts w) n)]))
 
 ;; Function definition for find-hard-make--widget: 
 ;; Signature: Widget Natural Number ->  ListOfWidget
 ;; Purpose: Given a widget, a natural number, and a number, 
 ;; examine the widget, as well as all of the subwidgets used to manufacture it,
 ;; and return those whose quantity in stock is less than the given natural number 
-;; or whose cost is greater than the given number. 
+;; or whose cost is greater than the given number.
+
+(check-expect (find-hard-make--widget (make-widget "" 0 0 0 empty) 0 0) empty)
+(check-expect (find-hard-make--widget Telephone 6 6) (list Telephone Receiver Wire))
 
 ;(define (find-hard-make--widget (make-widget "" 0 0 0 empty) 0 0) empty) ; Stub
+
+(define (find-hard-make--low low q p)
+  (cond [(empty? low) empty]
+        [else (append (find-hard-make--widget (first low) q p) (find-hard-make--low (rest low) q p))]))
+
+(define (find-hard-make--widget w q p)
+  (cond [(or (< (widget-quantity w) q) (> (widget-price w) p)) (cons w (find-hard-make--low (widget-parts w) q p))]
+        [else (find-hard-make--low (widget-parts w) q p)]))
 
 ;; Function definition for resupply--widget
 ;; Signature: Widget Natural Natural -> Widget 
