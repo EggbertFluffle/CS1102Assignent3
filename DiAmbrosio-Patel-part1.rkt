@@ -41,6 +41,15 @@
 ;; as always, the following tests are *not* exhaustive and simply serve as additional
 ;; documentation
 
+#;
+(define (fn-fo-list-of-widget low)
+  (cond [(empty? low) empty]
+        [else (append (find-name-longer-than--widget (first low)) (fn-fo-list-of-widget (rest low)))]))
+#;
+(define (fn-for-widget w)
+  (cond [(empty? (widget-parts w)) (... (widget-quantity w) (widget-time w) (widget-parts))])
+        [else (fn-fo-list-of-widget (widget-parts w))])
+
 ;; test cases for Part 1
 (check-expect (find-name-longer-than--widget Wire 3) (list Wire))
 (check-expect (find-quantity-over--widget Wire 2) (list Wire))
@@ -50,7 +59,6 @@
 (check-expect (resupply--widget Wire 6 2)
               (make-widget "Wire" 5 0 5 empty))
 ;;                                 ^^^ should be 0, not 5
-
 
 ;; Function definition for find-name-longer-than--widget: 
 ;; Signature: Widget Natural -> ListOfWidget
