@@ -45,10 +45,10 @@
 (check-expect (find-name-longer-than--widget Wire 3) (list Wire))
 (check-expect (find-quantity-over--widget Wire 2) (list Wire))
 (check-expect (find-cheaper-than--widget Wire 6) (list Wire))
-;;(check-expect (find-hard-make--widget Jewelry 6 4)
-;;              (list Jewelry Ring Pendant Bracelet Beads))
-;;(check-expect (resupply--widget Wire 6 2)
-;;              (make-widget "Wire" 5 0 5 empty))
+(check-expect (find-hard-make--widget Jewelry 6 4)
+              (list Jewelry Ring Pendant Bracelet Beads))
+(check-expect (resupply--widget Wire 6 2)
+              (make-widget "Wire" 5 0 5 empty))
 ;;                                 ^^^ should be 0, not 5
 
 
@@ -136,4 +136,29 @@
 ;; an adequate amount of parts to build the passed in quantity of the parent widget
 ;; Otherwise, the part that is in lacking will have its quanitity increased by the resupply amount
 
+(define RESUPPLY-TEST (make-widget "Telephone" 10 20 15 (list Receiver 
+                                                             	Buttons
+                                                             	(make-widget "Cord" 7 0 5 (list 
+                                                                                        (make-widget "Wire" 8 0 5 empty))))))
+(check-expect (resupply--widget Telephone 7 5) RESUPPLY-TEST)
+
 ;; (define (resupply--widget (make-widget "" 0 0 0 empty) 0 0) (make-widget "" 0 0 0 empty)) ;the stub
+
+(define (resupply--low low m i)
+  (cond [(empty? low) empty]
+        [else (cons (resupply--widget (first low) m i) (resupply--low (rest low) m i))]))
+
+(define (resupply--widget w m i)
+  (cond [(< (widget-quantity w) m)
+         (make-widget
+          (widget-name w)
+          (+ i (widget-quantity w))
+          (widget-time w)
+          (widget-price w)
+          (resupply--low (widget-parts w) m i))]
+    [else (make-widget
+          (widget-name w)
+          (widget-quantity w)
+          (widget-time w)
+          (widget-price w)
+          (resupply--low (widget-parts w) m i))]))
