@@ -1,6 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname Patel-DiAmbrosio.part2) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp")) #f)))
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname DiAmbrosio-Patel-part2) (read-case-sensitive #t) (teachpacks ((lib "image.rkt" "teachpack" "2htdp"))) (htdp-settings #(#t constructor repeating-decimal #f #t none #f ((lib "image.rkt" "teachpack" "2htdp")) #f)))
 ;; The starter file will NOT interpret as-is
 ;; It provides test cases as additional documentation
 ;; Tests are not exhaustive. You should add more tests covering edge cases. 
@@ -66,13 +66,6 @@
 ;; find-good-make--widget: Widget Natural Number -> ListOfWidget
 ;; Purpose: returns all (sub)widgets that require less than the
 ;; specified Natural’s amount of time to make and whose price is more than the Number’s
-
-;(define Wire (make-widget "Wire" 3 0 5 empty))
-;(define Cord (make-widget "Cord" 7 0 5 (list Wire)))
-;(define Numbers (make-widget "Numbers" 9 0 5 empty))
-;(define Buttons (make-widget "Buttons" 8 5 5 (list Numbers)))
-;(define Receiver (make-widget "Receiver" 11 0 7 empty))
-;(define Telephone (make-widget "Telephone" 5 20 15 (list Receiver Buttons Cord)))
 
 (check-expect (find-good-make--widget (make-widget "" 0 0 0 empty) 0 0) empty)
 (check-expect (find-good-make--widget Telephone 7 4) (list Receiver Buttons Numbers Cord Wire))
